@@ -188,3 +188,85 @@
   }
 })();
 
+// ===== Carousel logic =====
+function initCarousels(){
+  const carousels = document.querySelectorAll('.carousel');
+  carousels.forEach((carousel) => {
+    const track = carousel.querySelector('.carouselTrack');
+    const slides = [...carousel.querySelectorAll('.slide')];
+    const prev = carousel.querySelector('[data-prev]');
+    const next = carousel.querySelector('[data-next]');
+    const dotsWrap = carousel.querySelector('.dots');
+
+    if (!track || slides.length === 0) return;
+
+    let idx = 0;
+    let timer = null;
+    const autoplayMs = Number(carousel.dataset.autoplay || 0);
+
+    function renderDots(){
+      if (!dotsWrap) return;
+      dotsWrap.innerHTML = '';
+      slides.forEach((_, i) => {
+        const b = document.createElement('button');
+        b.className = 'dotBtn' + (i === idx ? ' active' : '');
+        b.type = 'button';
+        b.addEventListener('click', () => { goTo(i); restart(); });
+        dotsWrap.appendChild(b);
+      });
+    }
+
+    function goTo(i){
+      idx = (i + slides.length) % slides.length;
+      track.style.transform = `translateX(${-idx * 100}%)`;
+      if (dotsWrap){
+        [...dotsWrap.children].forEach((d, k) => d.classList.toggle('active', k === idx));
+      }
+    }
+
+    function step(dir){
+      goTo(idx + dir);
+      restart();
+    }
+
+    function start(){
+      if (!autoplayMs || slides.length < 2) return;
+      timer = setInterval(() => goTo(idx + 1), autoplayMs);
+    }
+    function stop(){
+      if (timer) clearInterval(timer);
+      timer = null;
+    }
+    function restart(){
+      stop(); start();
+    }
+
+    if (prev) prev.addEventListener('click', () => step(-1));
+    if (next) next.addEventListener('click', () => step(1));
+
+    // swipe support
+    let x0 = null;
+    track.addEventListener('pointerdown', (e) => { x0 = e.clientX; track.setPointerCapture(e.pointerId); stop(); });
+    track.addEventListener('pointerup', (e) => {
+      if (x0 === null) return;
+      const dx = e.clientX - x0;
+      x0 = null;
+      if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+      else restart();
+    });
+
+    // pause on hover
+    carousel.addEventListener('mouseenter', stop);
+    carousel.addEventListener('mouseleave', start);
+
+    renderDots();
+    goTo(0);
+    start();
+  });
+}
+
+// run after page load
+window.addEventListener('load', initCarousels);
+
+
+
