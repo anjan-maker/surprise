@@ -36,7 +36,7 @@
   const bg = document.getElementById("bg-floaties");
 
   if (bg && !reduceMotion) {
-    const COUNT = 48;
+    const COUNT = 140;
     const rand = (a, b) => a + Math.random() * (b - a);
 
     for (let i = 0; i < COUNT; i++) {
@@ -187,3 +187,4 @@
     }
   }
 })();
+
