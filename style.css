@@ -261,10 +261,13 @@ hr.sep{
 .ph:hover{ transform: translateY(-2px); }
 .ph img{
   width:100%;
-  height: 280px;
-  object-fit: cover;
+  height:auto;           /* key change */
+  max-height: 520px;     /* keeps layout nice */
+  object-fit: contain;   /* key change: no crop */
   display:block;
+  background: rgba(0,0,0,0.06);
 }
+
 .cap{
   padding: 10px 12px 12px;
   font-weight:650;
@@ -380,4 +383,5 @@ hr.sep{
 }
 .modalBackdrop.show{ display:block; }
 .modal{ max-width: 820px; margin: 90px auto; padding: 14px; }
+
 
