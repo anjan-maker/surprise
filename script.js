@@ -1,3 +1,55 @@
+// ===== Password Gate =====
+function gateInit(){
+  const gate = document.getElementById('gate');
+  const app = document.getElementById('app');
+  const pw = document.getElementById('pw');
+  const unlockBtn = document.getElementById('unlockBtn');
+  const hintBtn = document.getElementById('hintBtn');
+  const hint = document.getElementById('hint');
+  const msg = document.getElementById('gateMsg');
+
+  if (!gate || !app) return;
+
+  // CHANGE THIS PASSWORD:
+  const PASSWORD = "Elephant"; // example: Feb 11 = 1102? use what you want
+
+  const unlocked = localStorage.getItem('unlocked') === '1';
+  if (unlocked){
+    gate.style.display = 'none';
+    app.style.display = '';
+    return;
+  }
+
+  function tryUnlock(){
+    const entered = (pw.value || "").trim();
+    if (entered === PASSWORD){
+      localStorage.setItem('unlocked', '1');
+      gate.style.display = 'none';
+      app.style.display = '';
+      msg.textContent = "";
+
+      // Optional: start music after unlock if user had it ON
+      const audio = document.getElementById('bgm');
+      const musicOn = localStorage.getItem('musicOn') === '1';
+      if (audio && musicOn){
+        audio.play().catch(() => {});
+      }
+    } else {
+      msg.textContent = "Wrong password 🙂 Try again.";
+      pw.value = "";
+      pw.focus();
+    }
+  }
+
+  unlockBtn.addEventListener('click', tryUnlock);
+  pw.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+  hintBtn.addEventListener('click', () => {
+    hint.style.display = (hint.style.display === 'none') ? '' : 'none';
+  });
+}
+
+
+
 // ===== Utilities =====
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -242,12 +294,14 @@ window.refreshCarousels = () => initCarousels();
 
 // ===== Init =====
 window.addEventListener('load', () => {
+   gateInit();
   typewriter();
   musicInit();
   floatiesInit();
   constellationInit();
   initCarousels();
 });
+
 
 
 
